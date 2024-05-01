@@ -27,7 +27,7 @@ const get = (
 ) => {
   let headers = {
     Accept: 'application/json',
-  } as AxiosRequestHeaders;  
+  } as AxiosRequestHeaders;
   const searchParams = new URLSearchParams();
   let searchParamsString = '';
 
@@ -67,8 +67,12 @@ const postLogin = async (
 ) => {
   let headers = {
     Accept: 'application/json',
-  } as AxiosRequestHeaders;  
-  console.log('check post api :: url, body: ', `${body.url}honeycomb/${route}`, body);
+  } as AxiosRequestHeaders;
+  console.log(
+    'check post api :: url, body: ',
+    `${body.url}honeycomb/${route}`,
+    body,
+  );
 
   if (user.refreshToken) {
     headers.Authorization = `Honeycomb ${user.refreshToken}`;
@@ -92,9 +96,9 @@ const post = async (
   route: string,
   {body, type = 'json', user = {}}: TPostBody,
 ) => {
-  let headers = {
+  const headers = {
     Accept: 'application/json',
-  } as AxiosRequestHeaders;  
+  } as AxiosRequestHeaders;
   console.log('check post api :: url, body: ', `${BASE_URL}${route}`, body);
 
   if (user.refreshToken) {
@@ -120,7 +124,7 @@ const put = async (
 ) => {
   let headers = {
     Accept: 'application/json',
-  } as AxiosRequestHeaders;  
+  } as AxiosRequestHeaders;
   console.log('check post api :: url, body: ', `${BASE_URL}${route}`, body);
   if (user.refreshToken) {
     headers.Authorization = `Honeycomb ${user.refreshToken}`;
@@ -139,14 +143,13 @@ const put = async (
   });
 };
 
-
 const deleteApi = (
   route: string,
   {paramsObj = {}, user, type = 'json'}: TGetBody,
 ) => {
   let headers = {
     Accept: 'application/json',
-  } as AxiosRequestHeaders;  
+  } as AxiosRequestHeaders;
   const searchParams = new URLSearchParams();
   let searchParamsString = '';
 
@@ -177,7 +180,6 @@ const deleteApi = (
 
 // Routes
 const routes = {
-
   login: 'api/token/',
   getNews: 'api/news',
   perms: 'api/SettingsRolesAndPermissions/',
@@ -215,10 +217,10 @@ const routes = {
   restockDetail: 'api/RestockDetails/',
   itemInventory: 'api/CurrentItemInventory/',
   itemTransferType: 'api/SettingsTransferType/',
-  directLabelPrint: 'api/DirectLabelPrinting/'
+  directLabelPrint: 'api/DirectLabelPrinting/',
 };
 
-export {routes, get, post, put,  deleteApi, postLogin};
+export {routes, get, post, put, deleteApi, postLogin};
 
 export {login} from './auth';
 export {getNews} from './news';
@@ -231,7 +233,13 @@ export {
   getSubCategories,
   setSubCategory,
 } from './category';
-export {getTypes, setType, getSubTypes, setSubType, getTransferType} from './type';
+export {
+  getTypes,
+  setType,
+  getSubTypes,
+  setSubType,
+  getTransferType,
+} from './type';
 export {getUOMs, setUOM, getHandlingUnits, setHandlingUnit} from './unit';
 export {getStatus, deleteStatus} from './status';
 export {
@@ -263,4 +271,4 @@ export {
   getEntityItemSKU,
 } from './entity';
 export {getItemBOMS, getRestockDetail, getItemInventories} from './item';
-export {setDirectLabelPrint} from './print'
+export {setDirectLabelPrint} from './print';

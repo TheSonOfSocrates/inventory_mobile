@@ -1,27 +1,31 @@
 import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
-import {Table, Row, Rows} from 'react-native-table-component';
+import {Table, Row} from 'react-native-table-component';
 
 import * as Yup from 'yup';
-import {FormikValues, useFormik} from 'formik';
+import {useFormik} from 'formik';
 
-import {Text, TouchableOpacity, Alert} from 'react-native';
+// import {Text, TouchableOpacity, Alert} from 'react-native';
 import {TableWrapper, Cell} from 'react-native-table-component';
 
-import {Platform, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import Layout from './Layout';
 import {ScrollView} from 'react-native-gesture-handler';
 
 import AutoCompleteNScanInput from '../components/ScanItem';
-import {Button} from '../components/Button/Button';
-import UOMField from '../components/UOMField';
-import Icon from 'react-native-vector-icons/AntDesign';
+// import {Button} from '../components/Button/Button';
+// import UOMField from '../components/UOMField';
+// import Icon from 'react-native-vector-icons/AntDesign';
 
 import {useTheme} from '../theme/useTheme';
 import Card from '../components/Card';
 import {RootState} from '../store/store';
 import {AppDispatch} from '../store/store';
+// import Toast from 'react-native-toast-message';
 import {useDispatch, useSelector} from 'react-redux';
+import Toast from 'react-native-toast-message';
+import {ToastConfig} from '../components/Toast/ToastConfig';
+import _ from 'lodash';
 
 interface TItemInfo {
   location: string | null;
@@ -49,11 +53,11 @@ const ProductTable = ({
     location: '',
     expiration: '',
     uom: '',
-    quantity: ''
-    }
-  }: {
-    data: TItemInfo | undefined;
-  }) => {
+    quantity: '',
+  },
+}: {
+  data: TItemInfo | undefined;
+}) => {
   const {theme} = useTheme();
   return (
     <View style={{...styles.tableContainer, backgroundColor: theme.cardBg}}>
@@ -63,16 +67,16 @@ const ProductTable = ({
           style={styles.head}
           textStyle={styles.headText}
         />
-          <TableWrapper style={styles.row}>
-            <Cell data={data.location} textStyle={styles.text} />
-            <Cell data={data.expiration} textStyle={styles.text} />
-            <Cell data={data.uom} textStyle={styles.text} />
-            <Cell data={data.quantity} textStyle={styles.text} />
-          </TableWrapper>
+        <TableWrapper style={styles.row}>
+          <Cell data={data.location} textStyle={styles.text} />
+          <Cell data={data.expiration} textStyle={styles.text} />
+          <Cell data={data.uom} textStyle={styles.text} />
+          <Cell data={data.quantity} textStyle={styles.text} />
+        </TableWrapper>
       </Table>
     </View>
   );
-  };
+};
 
 const ProductAvailabilityScreen = ({
   navigation,
@@ -82,16 +86,17 @@ const ProductAvailabilityScreen = ({
   route: any;
 }): React.ReactElement => {
   const {params} = route;
-  const returnUrl = params?.returnUrl ?? 'Receiving';
+  // const returnUrl = params?.returnUrl ?? 'Receiving';
 
-  const dispatch = useDispatch<AppDispatch>();
+  // const dispatch = useDispatch<AppDispatch>();
   const itemInventoryList = useSelector(
     (state: RootState) => state.item.itemInventoryList,
   );
+
   const SKUList = useSelector((state: RootState) => state.entity.SKUList);
-  const locationList = useSelector(
-    (state: RootState) => state.location.locationList,
-  );
+  // const locationList = useSelector(
+  //   (state: RootState) => state.location.locationList,
+  // );
   const rawItemList = useSelector((state: RootState) => state.item.rawItemList);
 
   const [_locationList, setLocationList] = useState<TItemInfo>();
@@ -105,56 +110,72 @@ const ProductAvailabilityScreen = ({
 
   const {
     handleChange,
-    handleSubmit,
+    // handleSubmit,
     handleBlur,
     values,
     errors,
     touched,
     setFieldValue,
-    resetForm,
+    // resetForm,
   } = useFormik({
     initialValues: initialValues,
     validationSchema: ProductAvailabiltySchema,
     onSubmit: () => {},
   });
 
-  useEffect(() => {    
-    const currentInventoryItem = itemInventoryList.find((item) => item.code === values.productCode);
-    
-    // Warning!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:
-    // Backend only send data like:
-    //    [{"code": "tte", "quantity": "1", "uom": "kg"}, {"code": "tte121", "quantity": "1", "uom": "kg"}]
-    // Here "code" is "rawItemCode"
-    // so we can't prepare values.productCode and item.code
-    // and then can't find matching "quantity" and "uom"
-    // so the output of the following line is "undefined"
-    const rawItem = rawItemList.find((item) => item.code === values.productCode);
+  // useEffect(() => {
+  //   if (params?.fieldName && params?.value) {
+  //     setFieldValue(params.fieldName, params.value);
+  //   }
+  // }, [params?.fieldName, params?.value, setFieldValue]);
 
-    if (!currentInventoryItem) return;
+  useEffect(() => {
+    if (params?.fieldName && params?.value) {
+      const currentInventoryItem = itemInventoryList.find(
+        item => item.code === params?.value,
+      );
 
-    console.log("current inventory item (Product Availability) : ", currentInventoryItem);
+      // Warning!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:
+      // Backend only send data like:
+      //    [{"code": "tte", "quantity": "1", "uom": "kg"}, {"code": "tte121", "quantity": "1", "uom": "kg"}]
+      // Here "code" is "rawItemCode"
+      // so we can't prepare values.productCode and item.code
+      // and then can't find matching "quantity" and "uom"
+      // so the output of the following line is "undefined"
 
-    if (currentInventoryItem.sku_id != undefined || currentInventoryItem.sku_id != null) {
-      const skuItem = SKUList.filter((item) => item.id === currentInventoryItem.sku_id);
-      setFieldValue('itemSku', skuItem[0].name);
-    }
+      if (!currentInventoryItem) {
+        ToastConfig.show({
+          type: 'error',
+          message: 'The product was not found in the database',
+        });
 
-    let uom = '';
-    let quantity = '';
-    if (rawItem != undefined || rawItem != null) {
-      uom = rawItem.uom;
-      quantity = rawItem.quantity;
-    }
+        return;
+      }
 
-    const infoValue:TItemInfo =
-      { 
+      const rawItem = rawItemList.find(item => item.code === params?.value);
+
+      if (currentInventoryItem.sku_id) {
+        const skuItem = _.find(SKUList, {id: currentInventoryItem.sku_id});
+        skuItem && setFieldValue('itemSku', skuItem.name);
+        setFieldValue('productCode', currentInventoryItem.code);
+      }
+
+      let uom = '';
+      let quantity = '';
+      if (rawItem) {
+        uom = rawItem.uom;
+        quantity = rawItem.quantity;
+      }
+
+      const infoValue: TItemInfo = {
         location: currentInventoryItem.country_id,
         expiration: currentInventoryItem.expiration_date,
         uom: uom,
-        quantity: quantity
-      }
-    setLocationList(infoValue);
-  }, [values.productCode])
+        quantity: quantity,
+      };
+      setLocationList(infoValue);
+    }
+  }, [params]);
 
   return (
     <Layout>
@@ -162,16 +183,17 @@ const ProductAvailabilityScreen = ({
         <View style={styles.container}>
           <Card>
             <AutoCompleteNScanInput
-              handleId={setCurrentItemId}
               fieldName={'productCode'}
               navigation={navigation}
               placeholder="Enter Product Code"
               onChange={handleChange('productCode')}
+              handleId={setCurrentItemId}
               onBlur={handleBlur('productCode')}
               value={values.productCode}
               data={itemInventoryList}
-              style={{zIndex: 10}}
+              style={{zIndex: 8}}
               displayName={'code'}
+              screenName="Product Availability"
               error={
                 errors.productCode && touched.productCode
                   ? errors.productCode
@@ -185,13 +207,14 @@ const ProductAvailabilityScreen = ({
               placeholder="Enter Item SKU"
               onChange={handleChange('itemSku')}
               onBlur={handleBlur('itemSku')}
+              screenName="Product Availability"
               value={values.itemSku}
               data={SKUList}
               style={{zIndex: 9}}
               error={errors.itemSku && touched.itemSku ? errors.itemSku : ''}
             />
 
-            <ProductTable data={_locationList}/>
+            <ProductTable data={_locationList} />
           </Card>
         </View>
       </ScrollView>
@@ -233,7 +256,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
   },
-  text: {margin: 6, fontSize: 14, fontWeight: 'bold', textAlign: 'center'},
+  text: {
+    margin: 6,
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#fff',
+  },
   row: {flexDirection: 'row', backgroundColor: '#FFF1C1'},
   btn: {width: 58, height: 24, borderRadius: 2, textAlign: 'center'},
   icon: {textAlign: 'center', lineHeight: 24},

@@ -18,7 +18,7 @@ axios.interceptors.response.use(
     return response;
   },
   function (error) {
-    console.log('======> this is critical error ', error)
+    console.log('======> this is critical error ', error);
     Toast.show({
       type: 'error',
       text1: error.message,

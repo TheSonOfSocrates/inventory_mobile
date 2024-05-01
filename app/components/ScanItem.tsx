@@ -1,5 +1,5 @@
-import React, {useEffect, useState, useCallback} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import React, {useState, useCallback} from 'react';
+// import {useDispatch, useSelector} from 'react-redux';
 import {
   Platform,
   StyleSheet,
@@ -9,15 +9,15 @@ import {
   Linking,
 } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
-import {useCameraDevice} from 'react-native-vision-camera';
+// import {useCameraDevice} from 'react-native-vision-camera';
 import {Camera, CameraPermissionStatus} from 'react-native-vision-camera';
 import {useTheme} from '../theme/useTheme';
-import {spacing, typeSizes} from '../theme/theme';
+import {typeSizes} from '../theme/theme';
 import {AutocompleteNScanInputType} from '../types/components';
 
-import {getItemInventories} from '../services';
-import {RootState} from '../store/store';
-import {activeItemInventoryReceived} from '../store/itemSlice';
+// import {getItemInventories} from '../services';
+// import {RootState} from '../store/store';
+// import {activeItemInventoryReceived} from '../store/itemSlice';
 
 const AutoCompleteNScanInput = ({
   screenName = 'Receiving',
@@ -36,41 +36,47 @@ const AutoCompleteNScanInput = ({
   handleId,
   error,
 }: AutocompleteNScanInputType): React.ReactElement => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const {theme} = useTheme();
-  interface ItemType {
-    [key: string]: string;
-  }
-  const [itemData, setItemData] = useState<ItemType>({});
-  const user = useSelector((state: RootState) => state.user);
-  const activeItemInventory = useSelector(
-    (state: RootState) => state.item.activeItemInventory,
-  );
+  // interface ItemType {
+  //   [key: string]: string;
+  // }
+  // const [itemData, setItemData] = useState<ItemType>({});
+  // const user = useSelector((state: RootState) => state.user);
+  // const activeItemInventory = useSelector(
+  //   (state: RootState) => state.item.activeItemInventory,
+  // );
   // console.log('=====> activeItemInventory===>', activeItemInventory)
 
   const compareValues = (A: string, B: string) => {
     return A.toLowerCase() === B.toLowerCase().trim();
   };
 
-  const filterData = (list: Array<any>, query: string) => {
-    if (!query || !list.length) {
-      return [];
-    }
-    const regex = new RegExp(`${query.trim()}`, 'i');
+  const filterData = useCallback(
+    (list: Array<any>, query: string) => {
+      if (!query || !list.length) {
+        return [];
+      }
 
-    return list.filter((e: any) => {
+      // Escape special characters in the query string
+      const escapedQuery = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // Create a case-insensitive regular expression
+      const regex = new RegExp(escapedQuery, 'i');
 
-      return e[displayName].search(regex) >= 0;
-    });
-  };
-  
+      // Filter the list based on the regular expression
+      return list.filter((e: any) => {
+        return regex.test(e[displayName]);
+      });
+    },
+    [displayName],
+  );
   const queriedData = React.useMemo(
     () => filterData(data, value),
-    
-    [data, value],
+
+    [data, filterData, value],
   );
 
-  const device = useCameraDevice('back');
+  // const device = useCameraDevice('back');
   const [cameraPermissionStatus, setCameraPermissionStatus] =
     useState<CameraPermissionStatus>('not-determined');
 
@@ -78,7 +84,9 @@ const AutoCompleteNScanInput = ({
     const permission = await Camera.requestCameraPermission();
     // console.log(`Camera permission status: ${permission}`);
 
-    if (permission === 'denied') await Linking.openSettings();
+    if (permission === 'denied') {
+      await Linking.openSettings();
+    }
     if (permission === 'granted') {
       navigation.push('CodeScanner', {
         fieldName,
@@ -86,7 +94,7 @@ const AutoCompleteNScanInput = ({
       });
     }
     setCameraPermissionStatus(permission);
-  }, []);
+  }, [fieldName, navigation, screenName]);
 
   // const suggestions: any = React.useMemo(async () => {
   //   if (
@@ -112,8 +120,8 @@ const AutoCompleteNScanInput = ({
       : queriedData.length > 7
       ? queriedData.slice(0, 7)
       : queriedData;
-  }, [queriedData, value]);
-  
+  }, [displayName, queriedData, value]);
+
   // useEffect(() => {
   //   const fetchCurrentInventoryById = async () => {
   //     if (
@@ -126,7 +134,7 @@ const AutoCompleteNScanInput = ({
   //       console.log("-------selectedItemInventoryRes-------", selectedItemInventoryRes)
   //       // dispatch(activeItemInventoryReceived(selectedItemInventoryRes?.data));
   //     }
-  //   };  
+  //   };
   //   fetchCurrentInventoryById();
   // }, [queriedData, value]);
   const placeholderText = placeholder;
@@ -144,11 +152,7 @@ const AutoCompleteNScanInput = ({
 
   const renderLabel = () => {
     if (label) {
-      return (
-        <Text style={[styles.label]}>
-          {placeholder}
-        </Text>
-      );
+      return <Text style={[styles.label]}>{placeholder}</Text>;
     }
     return null;
   };
@@ -163,6 +167,7 @@ const AutoCompleteNScanInput = ({
           style={[
             styles.autocompleteContent,
             {color: theme.color},
+            // eslint-disable-next-line react-native/no-inline-styles
             {backgroundColor: isEditable ? '#fff' : '#eee'},
           ]}
           placeholderTextColor={'#cccccc'}
@@ -182,7 +187,7 @@ const AutoCompleteNScanInput = ({
               <TouchableOpacity
                 onPress={() => {
                   console.log('-----item data-----', item);
-                  item["id"] && handleId(item["id"]);
+                  item.id && handleId(item.id);
                   onChange(item[displayName]);
                 }}>
                 <View style={styles.itemTextContainer}>
@@ -302,7 +307,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
     paddingHorizontal: 8,
     fontSize: 11,
-    color:'#9B9A9A'
+    color: '#9B9A9A',
   },
 });
 export default AutoCompleteNScanInput;

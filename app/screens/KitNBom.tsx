@@ -21,8 +21,8 @@ import {RootState} from '../store/store';
 import {AppDispatch} from '../store/store';
 import {useDispatch, useSelector} from 'react-redux';
 import {TRawItem} from '../store/itemSlice';
-import { rawItemListUpdated } from '../store/itemSlice';
-
+import {rawItemListUpdated} from '../store/itemSlice';
+import _ from 'lodash';
 
 interface TValues {
   productCode: string;
@@ -40,7 +40,7 @@ const KitNBomSchema = Yup.object().shape({
 });
 
 const tableData = {
-  tableHead: ['Action', 'Raw Code', 'UOM' , 'Quantity'],
+  tableHead: ['Action', 'Raw Code', 'UOM', 'Quantity'],
 };
 
 const ProductTable = ({
@@ -72,10 +72,7 @@ const ProductTable = ({
         {data.map((rowData, index) => (
           <TableWrapper key={index} style={styles.row}>
             <DelButton rowData={rowData} index={index} />
-            <Cell
-              data={rowData.code}
-              textStyle={styles.text}
-            />
+            <Cell data={rowData.code} textStyle={styles.text} />
             <Cell data={rowData.uom} textStyle={styles.text} />
             <Cell data={rowData.quantity} textStyle={styles.text} />
           </TableWrapper>
@@ -104,7 +101,7 @@ const KitNBomScreen = ({
   };
 
   const dispatch = useDispatch<AppDispatch>();
-  const user: any = useSelector((state: RootState) => state.user);
+  // const user: any = useSelector((state: RootState) => state.user);
   const itemInventoryList = useSelector(
     (state: RootState) => state.item.itemInventoryList,
   );
@@ -116,14 +113,31 @@ const KitNBomScreen = ({
   const [currentItemId, setCurrentItemId] = useState('');
   const [itemSKUId, setItemSKUId] = useState('');
   const [rawItemCode, setRawItemCode] = useState('');
-  const [productCode, setProductCode] =  useState(params?.productCode)
+  const [productCode, setProductCode] = useState(params?.productCode);
 
   console.log('rawItemList===>', rawItemList);
   const [_rawItemList, setRawItemList] = useState<TRawItem[]>(rawItemList);
 
   useEffect(() => {
     if (params?.fieldName && params?.value) {
-      setFieldValue(params.fieldName, params.value);
+      const currentInventoryItem = _.find(itemInventoryList, {
+        code: params?.value,
+      });
+      if (currentInventoryItem) {
+        setFieldValue(params.fieldName, params.value);
+
+        if (currentInventoryItem.sku_id) {
+          const skuItem = _.find(SKUList, {id: currentInventoryItem.sku_id});
+          skuItem && setFieldValue('itemSku', skuItem.name);
+        }
+
+        if (currentInventoryItem.regular_uom_id) {
+          const uomItem = _.find(UOMList, {
+            id: currentInventoryItem.regular_uom_id,
+          });
+          uomItem && setFieldValue('uom', uomItem.name);
+        }
+      }
     }
   }, [params]);
 
@@ -134,10 +148,8 @@ const KitNBomScreen = ({
   }, [rawItemList]);
 
   const handleAdd = (formValues: FormikValues) => {
-    if (
-      _rawItemList.findIndex(e => e.code === values.rawItemCode) === -1
-    ) {
-      let rawItemListTemp: TRawItem[] = [..._rawItemList];
+    if (_rawItemList.findIndex(e => e.code === values.rawItemCode) === -1) {
+      const rawItemListTemp: TRawItem[] = [..._rawItemList];
       const newItem: TRawItem = {
         code: formValues.rawItemCode,
         uom: formValues.uom,
@@ -148,13 +160,13 @@ const KitNBomScreen = ({
     } else {
       Toast.show({
         type: 'error',
-        text1: 'Same code is already existed'
-      })
+        text1: 'Same code is already existed',
+      });
     }
   };
 
   const handleDeleteItem = (rowData: TRawItem) => {
-    let rawItemListTemp: TRawItem[] = [..._rawItemList];
+    const rawItemListTemp: TRawItem[] = [..._rawItemList];
     setRawItemList(rawItemListTemp.filter(e => e.code !== rowData.code));
   };
 
@@ -180,20 +192,27 @@ const KitNBomScreen = ({
     onSubmit: handleAdd,
   });
 
-  useEffect(() => {
-    setFieldValue('productCode', params?.productCode);
-    
-    const currentInventoryItem = itemInventoryList.find((item) => item.code === params?.productCode);
+  // useEffect(() => {
+  //   setFieldValue('productCode', params?.productCode);
 
-    if (!currentInventoryItem) return;
+  //   const currentInventoryItem = itemInventoryList.find(
+  //     item => item.code === params?.productCode,
+  //   );
 
-    console.log("current inventory item (Kit/Bom) : ", currentInventoryItem);
+  //   if (!currentInventoryItem) return;
 
-    if (currentInventoryItem.sku_id != undefined || currentInventoryItem.sku_id != null) {
-      const skuItem = SKUList.filter((item) => item.id === currentInventoryItem.sku_id);
-      setFieldValue('itemSku', skuItem[0].name);
-    }
-  }, [params?.productCode])
+  //   console.log('current inventory item (Kit/Bom) : ', currentInventoryItem);
+
+  //   if (
+  //     currentInventoryItem.sku_id != undefined ||
+  //     currentInventoryItem.sku_id != null
+  //   ) {
+  //     const skuItem = SKUList.filter(
+  //       item => item.id === currentInventoryItem.sku_id,
+  //     );
+  //     setFieldValue('itemSku', skuItem[0].name);
+  //   }
+  // }, [params?.productCode]);
 
   return (
     <Layout>
@@ -251,11 +270,12 @@ const KitNBomScreen = ({
             />
             <UOMField
               handleId={setUOMId}
-              fieldName="uomIn"
+              fieldName="uom"
               navigation={navigation}
               groupName="UOM In"
               data={UOMList}
               value={values.uom}
+              screenName="Kit/Bom"
               onChange={handleChange('uom')}
               onBlur={handleBlur('uom')}
               wt_value={values.uomWt}

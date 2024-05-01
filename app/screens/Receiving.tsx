@@ -1,22 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { StyleSheet, View } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {StyleSheet, View} from 'react-native';
 import Modal from 'react-native-modal';
 import Layout from './Layout';
-import { ScrollView } from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
 import * as Yup from 'yup';
 import AutoCompleteNScanInput from '../components/ScanItem';
 import DropDown from '../components/Dropdown';
-import { Button } from '../components/Button/Button';
+import {Button} from '../components/Button/Button';
 import Card from '../components/Card';
 import UOMField from '../components/UOMField';
-import { RootState } from '../store/store';
-import { FormikValues, useFormik } from 'formik';
-import { directLabelPrintAsync } from '../store/printSlice';
-import { setCurrentItemInventoryAsync } from '../store/itemSlice';
-import { AppDispatch } from '../store/store';
+import {RootState} from '../store/store';
+import {FormikValues, useFormik} from 'formik';
+import {directLabelPrintAsync} from '../store/printSlice';
+import {setCurrentItemInventoryAsync} from '../store/itemSlice';
+import {AppDispatch} from '../store/store';
 import NormalInput from '../components/NormalInput';
-import { TLocationPosition } from '../store/positionSlice';
+import {TLocationPosition} from '../store/positionSlice';
+import _ from 'lodash';
+import {ToastConfig} from '../components/Toast/ToastConfig';
 
 interface ValuesType {
   topQuantity: string;
@@ -53,15 +55,15 @@ const RecevingSchema = Yup.object().shape({
   destination: Yup.string().required('Required'),
 });
 
-const itemTypes = [
-  { id: '1', name: 'material/raw' },
-  { id: '2', name: 'eaches' },
-  { id: '3', name: 'assembly' },
-];
+// const itemTypes = [
+//   {id: '1', name: 'material/raw'},
+//   {id: '2', name: 'eaches'},
+//   {id: '3', name: 'assembly'},
+// ];
 
 const sourceTypeList = [
-  { id: '1', name: 'person' },
-  { id: '2', name: 'company' },
+  {id: '1', name: 'person'},
+  {id: '2', name: 'company'},
 ];
 
 const ReceivingScreen = ({
@@ -71,7 +73,7 @@ const ReceivingScreen = ({
   navigation: any;
   route: any;
 }): React.ReactElement => {
-  const { params } = route;
+  const {params} = route;
 
   const initialValues: ValuesType = {
     topQuantity: '1',
@@ -99,18 +101,20 @@ const ReceivingScreen = ({
 
   const dispatch = useDispatch<AppDispatch>();
   const user: any = useSelector((state: RootState) => state.user);
-    
-  const { entity: printEntity, loading: printLoading } = useSelector(
+
+  const {entity: printEntity, loading: printLoading} = useSelector(
     (state: RootState) => state.print,
   );
-  const { loading: saveLoading } = useSelector((state: RootState) => state.item);
+
+  const {loading: saveLoading} = useSelector((state: RootState) => state.item);
 
   // console.log('loading saveing', saveLoading);
 
-  const currencyList = useSelector(
-    (state: RootState) => state.currency.entities,
-  );
+  // const currencyList = useSelector(
+  //   (state: RootState) => state.currency.entities,
+  // );
   const [pmVisible, setPMVisible] = useState(false);
+  console.log({printLoading, pmVisible});
   const hidePrintModal = () => {
     setPMVisible(false);
   };
@@ -124,7 +128,7 @@ const ReceivingScreen = ({
   const UOMList = useSelector((state: RootState) => state.unit.UOMList);
 
   const SKUList = useSelector((state: RootState) => state.entity.SKUList);
-  const statusList = useSelector((state: RootState) => state.status.statusList);
+  // const statusList = useSelector((state: RootState) => state.status.statusList);
   const peopleList = useSelector((state: RootState) => state.entity.peopleList);
   // console.log('loading UOMList', peopleList);
 
@@ -139,25 +143,15 @@ const ReceivingScreen = ({
     (state: RootState) => state.position.positionList,
   );
 
-  const levelList = useSelector(
-    (state: RootState) => state.position.levelList,
-  );
+  const levelList = useSelector((state: RootState) => state.position.levelList);
 
-  const bayList = useSelector(
-    (state: RootState) => state.position.bayList,
-  );
+  const bayList = useSelector((state: RootState) => state.position.bayList);
 
-  const rowList = useSelector(
-    (state: RootState) => state.position.rowList,
-  );
+  const rowList = useSelector((state: RootState) => state.position.rowList);
 
-  const roomList = useSelector(
-    (state: RootState) => state.position.roomList,
-  );
+  const roomList = useSelector((state: RootState) => state.position.roomList);
 
-  const zoneList = useSelector(
-    (state: RootState) => state.position.zoneList,
-  );
+  const zoneList = useSelector((state: RootState) => state.position.zoneList);
 
   const warehouseList = useSelector(
     (state: RootState) => state.position.warehouseList,
@@ -171,9 +165,9 @@ const ReceivingScreen = ({
     (state: RootState) => state.position.regionList,
   );
 
-  const countryList = useSelector(
-    (state: RootState) => state.location.countryList,
-  );
+  // const countryList = useSelector(
+  //   (state: RootState) => state.location.countryList,
+  // );
 
   const locationInformationList = new Array<Array<TLocationPosition>>();
   locationInformationList[0] = positionList;
@@ -189,15 +183,12 @@ const ReceivingScreen = ({
   // console.log("All informations", locationInformationList);
 
   // console.log("CountryList : ", countryList);
-  // console.log("LocationList : ", positionList);
   const transferTypeList = useSelector(
     (state: RootState) => state.type.itemTransferTypes,
   );
 
-  console.log("transferTypeList : ", transferTypeList);
-  const typeList = useSelector(
-    (state: RootState) => state.type.itemTypes,
-  );
+  // console.log('transferTypeList : ', transferTypeList);
+  const typeList = useSelector((state: RootState) => state.type.itemTypes);
 
   const subTypeList = useSelector(
     (state: RootState) => state.type.itemSubTypes,
@@ -212,7 +203,7 @@ const ReceivingScreen = ({
   );
 
   // For the Embedded Device List
-  const itemBOMList = useSelector((state: RootState) => state.item.itemBOMList);
+  // const itemBOMList = useSelector((state: RootState) => state.item.itemBOMList);
 
   const embeddedDeviceList = useSelector(
     (state: RootState) => state.entity.embeddedDeviceList,
@@ -239,7 +230,6 @@ const ReceivingScreen = ({
 
   // const batch_number_list = itemInventoryList.map(i => i.batch_number);
 
-
   // const company_supplier_id_list = Array.from(new Set(itemInventoryList.map(i => i.company_supplier_id)));
   // // console.log("transfer_type_id : ", company_supplier_id_list);
   // const person_supplier_id_list = Array.from(new Set(itemInventoryList.map(i => i.person_supplier_id)));
@@ -258,13 +248,11 @@ const ReceivingScreen = ({
   // ];
   // const itemTypeList = itemTypes;
 
-
-
   const handleDirectLabelPrint = (values: FormikValues) => {
     const body = {
       item_id: values.productCode,
     };
-    dispatch(directLabelPrintAsync({ body, user }));
+    dispatch(directLabelPrintAsync({body, user}));
     hidePrintModal();
   };
 
@@ -295,7 +283,9 @@ const ReceivingScreen = ({
       regularQtyRemaining = values.uomOutWt;
     }
 
-    transfertype_id = transferTypeList.find(item => item.name === values.transferType)?.id;
+    transfertype_id = transferTypeList.find(
+      item => item.name === values.transferType,
+    )?.id;
 
     const updatedValues = {
       code: values.productCode,
@@ -319,7 +309,7 @@ const ReceivingScreen = ({
       regular_net_qty_remaining: regularQtyRemaining,
       regular_uom_id: regularUOMId,
 
-      country_id: null,//values.locationIDInfos[10],
+      country_id: null, //values.locationIDInfos[10],
       region_id: values.locationIDInfos[9],
       branch_id: values.locationIDInfos[8],
       warehouse_id: values.locationIDInfos[7],
@@ -341,7 +331,7 @@ const ReceivingScreen = ({
     const body = {
       ...updatedValues,
     };
-    dispatch(setCurrentItemInventoryAsync({ body, user, resetForm }));
+    dispatch(setCurrentItemInventoryAsync({body, user, resetForm}));
   };
 
   const {
@@ -361,93 +351,116 @@ const ReceivingScreen = ({
 
   useEffect(() => {
     if (params?.fieldName && params?.value) {
-      setFieldValue(params.fieldName, params.value);
+      const currentInventoryItem = _.find(itemInventoryList, {
+        code: params?.value,
+      });
+      if (currentInventoryItem) {
+        setFieldValue(params.fieldName, params.value);
+
+        if (currentInventoryItem.sku_id) {
+          const skuItem = _.find(SKUList, {id: currentInventoryItem.sku_id});
+          skuItem && setFieldValue('itemSku', skuItem.name);
+        }
+
+        if (currentInventoryItem.top_handling_unit_id)
+          setFieldValue(
+            'topHandlingUnit',
+            currentInventoryItem.top_handling_unit_id,
+          );
+
+        if (currentInventoryItem.bottom_handling_unit_id)
+          setFieldValue(
+            'bottomHandlingUnit',
+            currentInventoryItem.bottom_handling_unit_id,
+          );
+
+        if (currentInventoryItem.type_id) {
+          const typeItem = _.find(typeList, {id: currentInventoryItem.type_id});
+          typeItem && setFieldValue('itemType', typeItem.name);
+        }
+
+        if (currentInventoryItem.subtype_id) {
+          const subTypeItem = _.find(subTypeList, {
+            id: currentInventoryItem.subtype_id,
+          });
+          subTypeItem && setFieldValue('itemSubType', subTypeItem.name);
+        }
+
+        if (currentInventoryItem.category_id) {
+          const categoryItem = _.find(categoryList, {
+            id: currentInventoryItem.category_id,
+          });
+          categoryItem && setFieldValue('itemCategory', categoryItem.name);
+        }
+
+        if (currentInventoryItem.subcategory_id) {
+          const subCategoryItem = _.find(subCategoryList, {
+            id: currentInventoryItem.subcategory_id,
+          });
+          subCategoryItem &&
+            setFieldValue('itemSubCategory', subCategoryItem?.name);
+        }
+
+        if (currentInventoryItem.regular_uom_id) {
+          const uomItem = _.find(UOMList, {
+            id: currentInventoryItem.regular_uom_id,
+          });
+          uomItem && setFieldValue('uomIn', uomItem.name);
+        }
+        if (currentInventoryItem.regular_uom_id) {
+          const uomItem = _.find(UOMList, {
+            id: currentInventoryItem.regular_uom_id,
+          });
+          uomItem && setFieldValue('uomOut', uomItem.name);
+        }
+        if (currentInventoryItem.position_id) {
+          setFieldValue(
+            'destination',
+            locationInformationList[0].find(
+              item => item.id === currentInventoryItem.position_id,
+            )?.code,
+          );
+        }
+      } else {
+        setFieldValue(params.fieldName, '');
+        ToastConfig.show({
+          type: 'error',
+          message: 'Could not find scanned code in the database',
+        });
+      }
+
+      params.fieldName = null;
+      params.value = null;
     }
-  }, [params?.fieldName, params?.value]);
-
-  useEffect(() => {
-    console.log("current inventory item : use effect");
-    const currentInventoryItem = itemInventoryList.find((item) => item.code === values.productCode);
-
-    if (!currentInventoryItem) return;
-
-    console.log("current inventory item : ", currentInventoryItem);
-    if (currentInventoryItem.sku_id != undefined || currentInventoryItem.sku_id != null) {
-      const skuItem = SKUList.filter((item) => item.id === currentInventoryItem.sku_id);
-      setFieldValue('itemSku', skuItem[0].name);
-    }
-
-    if (currentInventoryItem.top_handling_unit_id != undefined || currentInventoryItem.top_handling_unit_id != null)
-      setFieldValue('topHandlingUnit', currentInventoryItem.top_handling_unit_id);
-
-    if (currentInventoryItem.bottom_handling_unit_id != undefined || currentInventoryItem.bottom_handling_unit_id != null)
-      setFieldValue('bottomHandlingUnit', currentInventoryItem.bottom_handling_unit_id);
-
-    if (currentInventoryItem.type_id != undefined || currentInventoryItem.type_id != null) {
-      const typeItem = typeList.find(item => item.id === currentInventoryItem.type_id);
-      setFieldValue('itemType', typeItem?.name);
-    }
-
-    if (currentInventoryItem.subtype_id != undefined || currentInventoryItem.subtype_id != null) {
-      const subTypeItem = subTypeList.find(item => item.id === currentInventoryItem.subtype_id);
-      setFieldValue('itemSubType', subTypeItem?.name);
-    }
-
-    if (currentInventoryItem.category_id != undefined || currentInventoryItem.category_id != null) {
-      const categoryItem = categoryList.find(item => item.id === currentInventoryItem.category_id);
-      setFieldValue('itemCategory', categoryItem?.name);
-    }
-
-    if (currentInventoryItem.subcategory_id != undefined || currentInventoryItem.subcategory_id != null) {
-      const subCategoryItem = subCategoryList.find(item => item.id === currentInventoryItem.subcategory_id);
-      setFieldValue('itemSubCategory', subCategoryItem?.name);
-    }
-
-    if (currentInventoryItem.regular_uom_id != undefined || currentInventoryItem.regular_uom_id != null) {
-      const uomItem = UOMList.filter(item => item.id === currentInventoryItem.regular_uom_id);
-      setFieldValue('uomIn', uomItem[0].name);
-    }
-    if (currentInventoryItem.regular_uom_id != undefined || currentInventoryItem.regular_uom_id != null) {
-      const uomItem = UOMList.filter(item => item.id === currentInventoryItem.regular_uom_id);
-      setFieldValue('uomOut', uomItem[0].name);
-    }
-
-    if (currentInventoryItem.position_id != undefined || currentInventoryItem.position_id != null) {
-      console.log("destination uahhahahahahahah");
-      console.log(locationInformationList[0].find(item => item.id === currentInventoryItem.position_id)?.code);
-      setFieldValue('destination', locationInformationList[0].find(item => item.id === currentInventoryItem.position_id)?.code);
-    }
-  }, [values.productCode])
-
-  useEffect(() => {
-    console.log("Current ItemType  :  ", values.itemType);
-    console.log("typeList : ", typeList);
-  }, [values.itemType]);
+  }, [params]);
 
   useEffect(() => {
     // console.log("current destination ", values.destination);
     // console.log("index___    :  ", positionList.findIndex(item => item.code === values.destination));
-    var locationInfo = positionList.find(item => item.code === values.destination);
+    let locationInfo = positionList.find(
+      item => item.code === values.destination,
+    );
     values.locationIDInfos = new Array<string>(11);
     // console.log("location list : ", positionList);
     // console.log("location count : ", positionList.length);
     // console.log("location found :  ", locationInfo);
     const locationArray = new Array<TLocationPosition>();
 
-    var loopIndex = 1;
+    let loopIndex = 1;
     while (locationInfo != undefined && locationInfo != null) {
-
       values.locationIDInfos[loopIndex - 1] = locationInfo.id;
       locationArray.push(locationInfo);
 
-      let searchStr = locationInfo.parent_location_id;
+      const searchStr = locationInfo.parent_location_id;
 
       // console.log("parent value : ", locationInfo.parent_location_id);
       // console.log("search value : ", searchStr);
       // console.log("locationList first id : ", positionList[0].id);
 
       // locationInfo = levelList.find(item => item.id === searchStr);
-      locationInfo = locationInformationList[loopIndex++].find(item => item.id === searchStr);
+      locationInfo = locationInformationList[loopIndex++].find(
+        item => item.id === searchStr,
+      );
 
       // console.log("location loop ", locationInfo);
       // console.log("new location count : ", levelList.length);
@@ -458,7 +471,7 @@ const ReceivingScreen = ({
 
     // console.log("location found : ", locationInfo);
     // console.log("location array : ", locationArray);
-    const countryInfo = countryList.find(item => item.code === values.destination);
+
     // console.log("country found : ", countryInfo);
   }, [values.destination]);
 
@@ -489,9 +502,8 @@ const ReceivingScreen = ({
             <View
               style={{
                 flex: 1,
-                flexDirection: 'row'
-              }}
-            >
+                flexDirection: 'row',
+              }}>
               <DropDown
                 placeholder={'Source'}
                 name={'source Type'}
@@ -500,7 +512,9 @@ const ReceivingScreen = ({
                 onChange={handleChange('sourceType')}
                 onBlur={handleBlur('sourceType')}
                 error={
-                  errors.sourceType && touched.sourceType ? errors.sourceType : ''
+                  errors.sourceType && touched.sourceType
+                    ? errors.sourceType
+                    : ''
                 }
               />
               <DropDown
@@ -511,19 +525,22 @@ const ReceivingScreen = ({
                 onChange={handleChange('transferType')}
                 onBlur={handleBlur('transferType')}
                 error={
-                  errors.transferType && touched.transferType ? errors.transferType : ''
+                  errors.transferType && touched.transferType
+                    ? errors.transferType
+                    : ''
                 }
               />
             </View>
             <AutoCompleteNScanInput
               handleId={setSourceId}
+              fieldName="source"
               navigation={navigation}
               placeholder="Select Source"
               data={values.sourceType == 'person' ? peopleList : companyList}
               value={values.source}
               onChange={handleChange('source')}
               onBlur={handleBlur('source')}
-              style={{ zIndex: 9 }}
+              style={{zIndex: 9}}
               displayName={values.sourceType == 'person' ? 'user_name' : 'name'}
               error={errors.source && touched.source ? errors.source : ''}
             />
@@ -536,7 +553,7 @@ const ReceivingScreen = ({
               onBlur={handleBlur('productCode')}
               value={values.productCode}
               data={itemInventoryList}
-              style={{ zIndex: 8 }}
+              style={{zIndex: 8}}
               displayName={'code'}
               error={
                 errors.productCode && touched.productCode
@@ -553,7 +570,7 @@ const ReceivingScreen = ({
               onBlur={handleBlur('itemSku')}
               value={values.itemSku}
               data={SKUList}
-              style={{ zIndex: 7 }}
+              style={{zIndex: 7}}
               error={errors.itemSku && touched.itemSku ? errors.itemSku : ''}
             />
             <View
@@ -573,7 +590,7 @@ const ReceivingScreen = ({
                 onBlur={handleBlur('topHandlingUnit')}
                 value={values.topHandlingUnit}
                 data={handlingUnitList}
-                style={{ zIndex: 6, flex: 3.5, }}
+                style={{zIndex: 6, flex: 3.5}}
                 error={
                   errors.topHandlingUnit && touched.topHandlingUnit
                     ? errors.topHandlingUnit
@@ -590,7 +607,7 @@ const ReceivingScreen = ({
                 value={values.topQuantity}
                 data={[]}
                 style={{
-                  zIndex: 6
+                  zIndex: 6,
                 }}
                 displayName={'topQuantity'}
                 error={
@@ -609,7 +626,6 @@ const ReceivingScreen = ({
                 flexDirection: 'row',
                 backgroundColor: 'transparent',
               }}>
-
               <AutoCompleteNScanInput
                 handleId={setBottomHandlingUnit}
                 fieldName="bottomHandlingUnit"
@@ -619,7 +635,7 @@ const ReceivingScreen = ({
                 onBlur={handleBlur('bottomHandlingUnit')}
                 value={values.bottomHandlingUnit}
                 data={handlingUnitList}
-                style={{ zIndex: 5, flex: 3.5, }}
+                style={{zIndex: 5, flex: 3.5}}
                 error={
                   errors.bottomHandlingUnit && touched.bottomHandlingUnit
                     ? errors.bottomHandlingUnit
@@ -636,7 +652,7 @@ const ReceivingScreen = ({
                 value={values.bottomQuantity}
                 data={[]}
                 style={{
-                  zIndex: 5
+                  zIndex: 5,
                 }}
                 displayName={'bottomQuantity'}
                 error={
@@ -649,19 +665,20 @@ const ReceivingScreen = ({
             <View
               style={{
                 flex: 1,
-                flexDirection: 'row'
-              }}
-            >
+                flexDirection: 'row',
+              }}>
               <DropDown
                 placeholder={'Select Item Type'}
-                name='itemType'
+                name="itemType"
                 navigation={navigation}
-                data={{ productCode: values.productCode, returnUrl: "Receiving" }}
+                data={{productCode: values.productCode, returnUrl: 'Receiving'}}
                 list={typeList}
                 value={values?.itemType}
                 onChange={e => setFieldValue('itemType', e)}
                 onBlur={handleBlur('itemType')}
-                error={errors.itemType && touched.itemType ? errors.itemType : ''}
+                error={
+                  errors.itemType && touched.itemType ? errors.itemType : ''
+                }
               />
               <DropDown
                 placeholder={'Select Item SubType'}
@@ -670,15 +687,18 @@ const ReceivingScreen = ({
                 value={values?.itemSubType}
                 onChange={e => setFieldValue('itemSubType', e)}
                 onBlur={handleBlur('itemSubType')}
-                error={errors.itemSubType && touched.itemSubType ? errors.itemSubType : ''}
+                error={
+                  errors.itemSubType && touched.itemSubType
+                    ? errors.itemSubType
+                    : ''
+                }
               />
             </View>
             <View
               style={{
                 flex: 1,
-                flexDirection: 'row'
-              }}
-            >
+                flexDirection: 'row',
+              }}>
               <DropDown
                 placeholder={'Select Item Category'}
                 name="itemCategory"
@@ -686,7 +706,11 @@ const ReceivingScreen = ({
                 value={values.itemCategory}
                 onChange={handleChange('itemCategory')}
                 onBlur={handleBlur('itemCategory')}
-                error={errors.itemCategory && touched.itemCategory ? errors.itemCategory : ''}
+                error={
+                  errors.itemCategory && touched.itemCategory
+                    ? errors.itemCategory
+                    : ''
+                }
               />
               <DropDown
                 placeholder={'Select Item SubCategory'}
@@ -695,7 +719,11 @@ const ReceivingScreen = ({
                 value={values.itemSubCategory}
                 onChange={handleChange('itemSubCategory')}
                 onBlur={handleBlur('itemSubCategory')}
-                error={errors.itemSubCategory && touched.itemSubCategory ? errors.itemSubCategory : ''}
+                error={
+                  errors.itemSubCategory && touched.itemSubCategory
+                    ? errors.itemSubCategory
+                    : ''
+                }
               />
             </View>
             <UOMField
@@ -710,7 +738,7 @@ const ReceivingScreen = ({
               wt_data={[]}
               wt_onChange={handleChange('uomInWt')}
               wt_onBlur={handleBlur('uomInWt')}
-              style={{ zIndex: 4 }}
+              style={{zIndex: 4}}
               error={errors.uomIn && touched.uomIn ? errors.uomIn : ''}
               wt_error={errors.uomInWt && touched.uomInWt ? errors.uomInWt : ''}
               handleId={setUOMInId}
@@ -719,6 +747,7 @@ const ReceivingScreen = ({
               navigation={navigation}
               groupName="UOM Out"
               data={UOMList}
+              fieldName="uomOut"
               value={values.uomOut}
               onChange={handleChange('uomOut')}
               onBlur={handleBlur('uomOut')}
@@ -726,7 +755,7 @@ const ReceivingScreen = ({
               wt_data={[]}
               wt_onChange={handleChange('uomOutWt')}
               wt_onBlur={handleBlur('uomOutWt')}
-              style={{ zIndex: 3 }}
+              style={{zIndex: 3}}
               error={errors.uomOut && touched.uomOut ? errors.uomOut : ''}
               wt_error={
                 errors.uomOutWt && touched.uomOutWt ? errors.uomOutWt : ''
@@ -753,7 +782,7 @@ const ReceivingScreen = ({
               value={values.destination}
               data={positionList}
               displayName="code"
-              style={{ zIndex: 2 }}
+              style={{zIndex: 2}}
               error={
                 errors.destination && touched.destination
                   ? errors.destination
@@ -764,13 +793,13 @@ const ReceivingScreen = ({
               text="Print"
               isLoading={printLoading}
               onPress={showPrintModal}
-            // testID="Login.Button"
+              // testID="Login.Button"
             />
             <Button
               text="Save"
               isLoading={saveLoading}
               onPress={handleSubmit}
-            // testID="Login.Button"
+              // testID="Login.Button"
             />
             <Modal onDismiss={hidePrintModal} isVisible={pmVisible}>
               <View style={styles.modalContainerStyle}>
@@ -795,7 +824,7 @@ const ReceivingScreen = ({
                   value={values.embeddedDevice}
                   data={embeddedDeviceList}
                   displayName="device_code"
-                  style={{ zIndex: 1 }}
+                  style={{zIndex: 1}}
                   error={
                     errors.embeddedDevice && touched.embeddedDevice
                       ? errors.embeddedDevice

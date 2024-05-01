@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {
   setCurrentItemInventory,
   putCurrentItemInventory,
@@ -246,8 +246,8 @@ const initialState: InitialState = {
 export const setCurrentItemInventoryAsync = createAsyncThunk(
   'item/setCurrentitemInventory',
   async (
-    { body, user, resetForm }: { body: any; user: any; resetForm: any },
-    { rejectWithValue },
+    {body, user, resetForm}: {body: any; user: any; resetForm: any},
+    {rejectWithValue},
   ) => {
     try {
       // const {id: itemId, ...restBody} = body;
@@ -272,48 +272,125 @@ const itemSlice = createSlice({
   reducers: {
     itemInventoriesReceived(state, action) {
       state.itemInventoryList = action.payload.map(
-        ({ id, code, name, description,
-          lot_number, batch_number, generic_code, image_url,
-          regular_net_qty_received, regular_net_qty_remaining,
-          eaches_net_qty_received, eaches_net_qty_remaining,
-          no_top_handling_unit, no_bottom_handling_unit,
-          manufacturing_date, slaughter_date, production_date,
-          processing_date, datetime_in, datetime_out,
-          expiration_date, created_datetime, updated_datetime,
-          syncDateTime, sku_id, transfer_type_id, cost_center_id,
-          category_id, subcategory_id, type_id, subtype_id,
-          company_supplier_id, company_customer_id,
-          person_supplier_id, person_customer_id, regular_uom_id,
-          eaches_received_uom_id, eaches_remaining_uom_id,
-          top_handling_unit_id, bottom_handling_unit_id,
-          country_id, region_id, branch_id, warehouse_id,
-          zone_id, area_id, room_id, row_id, bay_id, level_id,
-          position_id, bin_id, person_id_createdby,
-          person_id_updatedby, accessCode, status }: TItemInventoryDetailed) =>
         ({
-          id, code, name, description,
-          lot_number, batch_number, generic_code, image_url,
-          regular_net_qty_received, regular_net_qty_remaining,
-          eaches_net_qty_received, eaches_net_qty_remaining,
-          no_top_handling_unit, no_bottom_handling_unit,
-          manufacturing_date, slaughter_date, production_date,
-          processing_date, datetime_in, datetime_out,
-          expiration_date, created_datetime, updated_datetime,
-          syncDateTime, sku_id, transfer_type_id, cost_center_id,
-          category_id, subcategory_id, type_id, subtype_id,
-          company_supplier_id, company_customer_id,
-          person_supplier_id, person_customer_id, regular_uom_id,
-          eaches_received_uom_id, eaches_remaining_uom_id,
-          top_handling_unit_id, bottom_handling_unit_id,
-          country_id, region_id, branch_id, warehouse_id,
-          zone_id, area_id, room_id, row_id, bay_id, level_id,
-          position_id, bin_id, person_id_createdby,
-          person_id_updatedby, accessCode, status
+          id,
+          code,
+          name,
+          description,
+          lot_number,
+          batch_number,
+          generic_code,
+          image_url,
+          regular_net_qty_received,
+          regular_net_qty_remaining,
+          eaches_net_qty_received,
+          eaches_net_qty_remaining,
+          no_top_handling_unit,
+          no_bottom_handling_unit,
+          manufacturing_date,
+          slaughter_date,
+          production_date,
+          processing_date,
+          datetime_in,
+          datetime_out,
+          expiration_date,
+          created_datetime,
+          updated_datetime,
+          syncDateTime,
+          sku_id,
+          transfer_type_id,
+          cost_center_id,
+          category_id,
+          subcategory_id,
+          type_id,
+          subtype_id,
+          company_supplier_id,
+          company_customer_id,
+          person_supplier_id,
+          person_customer_id,
+          regular_uom_id,
+          eaches_received_uom_id,
+          eaches_remaining_uom_id,
+          top_handling_unit_id,
+          bottom_handling_unit_id,
+          country_id,
+          region_id,
+          branch_id,
+          warehouse_id,
+          zone_id,
+          area_id,
+          room_id,
+          row_id,
+          bay_id,
+          level_id,
+          position_id,
+          bin_id,
+          person_id_createdby,
+          person_id_updatedby,
+          accessCode,
+          status,
+        }: TItemInventoryDetailed) => ({
+          id,
+          code,
+          name,
+          description,
+          lot_number,
+          batch_number,
+          generic_code,
+          image_url,
+          regular_net_qty_received,
+          regular_net_qty_remaining,
+          eaches_net_qty_received,
+          eaches_net_qty_remaining,
+          no_top_handling_unit,
+          no_bottom_handling_unit,
+          manufacturing_date,
+          slaughter_date,
+          production_date,
+          processing_date,
+          datetime_in,
+          datetime_out,
+          expiration_date,
+          created_datetime,
+          updated_datetime,
+          syncDateTime,
+          sku_id,
+          transfer_type_id,
+          cost_center_id,
+          category_id,
+          subcategory_id,
+          type_id,
+          subtype_id,
+          company_supplier_id,
+          company_customer_id,
+          person_supplier_id,
+          person_customer_id,
+          regular_uom_id,
+          eaches_received_uom_id,
+          eaches_remaining_uom_id,
+          top_handling_unit_id,
+          bottom_handling_unit_id,
+          country_id,
+          region_id,
+          branch_id,
+          warehouse_id,
+          zone_id,
+          area_id,
+          room_id,
+          row_id,
+          bay_id,
+          level_id,
+          position_id,
+          bin_id,
+          person_id_createdby,
+          person_id_updatedby,
+          accessCode,
+          status,
         }),
       );
     },
     itemBOMsReceived(state, action) {
-      state.itemBOMList = action.payload.map(({ id }: TItemBOM) => ({ id }));
+      state.itemBOMList = action.payload.map(({id}: TItemBOM) => ({id}));
     },
     activeItemInventoryReceived(state, action) {
       state.activeItemInventory = action.payload;
@@ -338,12 +415,15 @@ const itemSlice = createSlice({
     ),
       builder.addCase(
         setCurrentItemInventoryAsync.rejected,
-        (state, action: { payload: any }) => {
+        (state, action: {payload: any}) => {
           state.loading = false;
           // console.log('====> set current inventory async');
           // console.log(action);
           // const payload = {"code": ["This field may not be blank."]};
           // Extract the messages for each field and join them
+
+          const errorText = action.payload?.code?.join();
+
           const formattedErrors = Object.entries(action.payload).map(
             ([key, value]: any) => `${key}: ${value.join(' ')}`,
           );
@@ -351,7 +431,10 @@ const itemSlice = createSlice({
 
           Toast.show({
             type: 'error',
-            text1: JSON.stringify(formattedErrors),
+            text1: errorText || 'Something wrong, try again',
+            autoHide: true,
+            visibilityTime: 5000,
+            swipeable: false,
           });
         },
       );

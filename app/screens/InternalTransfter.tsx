@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import UOMField from '../components/UOMField';
 
 import * as Yup from 'yup';
-import { FormikValues, useFormik } from 'formik';
+import {FormikValues, useFormik} from 'formik';
 
-import { ScrollView } from 'react-native-gesture-handler';
-import { StyleSheet, View } from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
+import {StyleSheet, View} from 'react-native';
 import Modal from 'react-native-modal';
 
 import AutoCompleteNScanInput from '../components/ScanItem';
-import { Button } from '../components/Button/Button';
+import {Button} from '../components/Button/Button';
 
 import Layout from './Layout';
 import Card from '../components/Card';
 import DropDown from '../components/Dropdown';
 import SwitchItem from '../components/Switch';
-import { AppDispatch, RootState } from '../store/store';
-import { getItemInventories } from '../services';
+import {AppDispatch, RootState} from '../store/store';
+import {getItemInventories} from '../services';
 
-import { directLabelPrintAsync } from '../store/printSlice';
-import { setCurrentItemInventoryAsync } from '../store/itemSlice';
+import {directLabelPrintAsync} from '../store/printSlice';
+import {setCurrentItemInventoryAsync} from '../store/itemSlice';
 import NormalInput from '../components/NormalInput';
-import { TLocationPosition } from '../store/positionSlice';
+import {TLocationPosition} from '../store/positionSlice';
 
 interface TValues {
   productCode: string;
@@ -55,8 +55,8 @@ const InternalTransterSchema = Yup.object().shape({
 });
 
 const sourceTypeList = [
-  { id: '1', name: 'Full Transfer' },
-  { id: '2', name: 'Partial Transfer' },
+  {id: '1', name: 'Full Transfer'},
+  {id: '2', name: 'Partial Transfer'},
 ];
 
 function InternalTransferScreen({
@@ -66,15 +66,15 @@ function InternalTransferScreen({
   navigation: any;
   route: any;
 }): React.ReactElement {
-  const { params } = route;
+  const {params} = route;
   console.log('======> params', params);
   const dispatch = useDispatch<AppDispatch>();
   const user: any = useSelector((state: RootState) => state.user);
 
-  const { entity: printEntity, loading: printLoading } = useSelector(
+  const {entity: printEntity, loading: printLoading} = useSelector(
     (state: RootState) => state.print,
   );
-  const { loading: saveLoading } = useSelector((state: RootState) => state.item);
+  const {loading: saveLoading} = useSelector((state: RootState) => state.item);
 
   const itemInventoryList = useSelector(
     (state: RootState) => state.item.itemInventoryList,
@@ -92,9 +92,7 @@ function InternalTransferScreen({
   );
   const SKUList = useSelector((state: RootState) => state.entity.SKUList);
 
-  const typeList = useSelector(
-    (state: RootState) => state.type.itemTypes,
-  );
+  const typeList = useSelector((state: RootState) => state.type.itemTypes);
 
   const subTypeList = useSelector(
     (state: RootState) => state.type.itemSubTypes,
@@ -112,25 +110,15 @@ function InternalTransferScreen({
     (state: RootState) => state.position.positionList,
   );
 
-  const levelList = useSelector(
-    (state: RootState) => state.position.levelList,
-  );
+  const levelList = useSelector((state: RootState) => state.position.levelList);
 
-  const bayList = useSelector(
-    (state: RootState) => state.position.bayList,
-  );
+  const bayList = useSelector((state: RootState) => state.position.bayList);
 
-  const rowList = useSelector(
-    (state: RootState) => state.position.rowList,
-  );
+  const rowList = useSelector((state: RootState) => state.position.rowList);
 
-  const roomList = useSelector(
-    (state: RootState) => state.position.roomList,
-  );
+  const roomList = useSelector((state: RootState) => state.position.roomList);
 
-  const zoneList = useSelector(
-    (state: RootState) => state.position.zoneList,
-  );
+  const zoneList = useSelector((state: RootState) => state.position.zoneList);
 
   const warehouseList = useSelector(
     (state: RootState) => state.position.warehouseList,
@@ -210,7 +198,7 @@ function InternalTransferScreen({
     const body = {
       item_id: values.productCode,
     };
-    dispatch(directLabelPrintAsync({ body, user }));
+    dispatch(directLabelPrintAsync({body, user}));
     hidePrintModal();
   };
 
@@ -256,7 +244,7 @@ function InternalTransferScreen({
   //     level_id: values.locationIDInfos[1],
   //     position_id: values.locationIDInfos[0],
   //     bin_id: null,
-      
+
   //     type_id: values.itemType.id,
   //     subtype_id: values.itemSubType.id,
   //     category_id: values.itemCategory.id,
@@ -313,16 +301,16 @@ function InternalTransferScreen({
       eachesQtyRemaining = null;
 
     if (values.isFullTransfer) {
-      console.log("Full Transfer------------------>", values.isFullTransfer);
+      console.log('Full Transfer------------------>', values.isFullTransfer);
 
       const body = {
         id: currentItemId,
         person_customer_id: personId,
         company_customer_id: companyId,
       };
-      dispatch(setCurrentItemInventoryAsync({ body, user, resetForm }));
+      dispatch(setCurrentItemInventoryAsync({body, user, resetForm}));
     } else {
-      console.log("Partial Transfer------------------>", values.isFullTransfer);
+      console.log('Partial Transfer------------------>', values.isFullTransfer);
 
       if (values?.itemType == 'eaches') {
         eachesReceivedUOMId = UOMId;
@@ -335,7 +323,9 @@ function InternalTransferScreen({
         regularQtyRemaining = values.uomOutWt;
       }
       const updatedValues = {
-        code: values.newProductCode ? values.newProductCode : values.productCode,
+        code: values.newProductCode
+          ? values.newProductCode
+          : values.productCode,
         sku_id: itemSKUId,
         top_handling_unit_id: topHandlingUnitId,
         bottom_handling_unit_id: bottomHandlingUnit,
@@ -351,7 +341,7 @@ function InternalTransferScreen({
         regular_net_qty_remaining: regularQtyRemaining,
         regular_uom_id: regularUOMId,
 
-        country_id: null,//values.locationIDInfos[10],
+        country_id: null, //values.locationIDInfos[10],
         region_id: values.locationIDInfos[9],
         branch_id: values.locationIDInfos[8],
         warehouse_id: values.locationIDInfos[7],
@@ -373,7 +363,7 @@ function InternalTransferScreen({
       const body = {
         ...updatedValues,
       };
-      dispatch(setCurrentItemInventoryAsync({ body, user, resetForm }));
+      dispatch(setCurrentItemInventoryAsync({body, user, resetForm}));
     }
   };
 
@@ -416,10 +406,13 @@ function InternalTransferScreen({
     onSubmit: handleInventorySave,
   });
 
+  console.log({uomOut: values.uomOut});
   useEffect(() => {
     // console.log("current destination ", values.destination);
     // console.log("index___    :  ", positionList.findIndex(item => item.code === values.destination));
-    var locationInfo = positionList.find(item => item.code === values.destination);
+    var locationInfo = positionList.find(
+      item => item.code === values.destination,
+    );
     values.locationIDInfos = new Array<string>(11);
     // console.log("location list : ", positionList);
     // console.log("location count : ", positionList.length);
@@ -428,7 +421,6 @@ function InternalTransferScreen({
 
     var loopIndex = 1;
     while (locationInfo != undefined && locationInfo != null) {
-
       values.locationIDInfos[loopIndex - 1] = locationInfo.id;
       locationArray.push(locationInfo);
 
@@ -439,72 +431,133 @@ function InternalTransferScreen({
       // console.log("locationList first id : ", positionList[0].id);
 
       // locationInfo = levelList.find(item => item.id === searchStr);
-      locationInfo = locationInformationList[loopIndex++].find(item => item.id === searchStr);
+      locationInfo = locationInformationList[loopIndex++].find(
+        item => item.id === searchStr,
+      );
 
       // console.log("location loop ", locationInfo);
       // console.log("new location count : ", levelList.length);
       // console.log("newSearch : ", locationInfo);
     }
 
-    console.log("internal location Infos : ", values.locationIDInfos);
+    console.log('internal location Infos : ', values.locationIDInfos);
 
     // console.log("location found : ", locationInfo);
     // console.log("location array : ", locationArray);
-    const countryInfo = countryList.find(item => item.code === values.destination);
-    console.log("country found : ", countryInfo);
+    const countryInfo = countryList.find(
+      item => item.code === values.destination,
+    );
+    console.log('country found : ', countryInfo);
   }, [values.destination]);
 
   useEffect(() => {
-    console.log("current inventory item : use effect");
-    const currentInventoryItem = itemInventoryList.find((item) => item.code === values.productCode);
+    console.log('current inventory item : use effect');
+    const currentInventoryItem = itemInventoryList.find(
+      item => item.code === values.productCode,
+    );
 
     if (!currentInventoryItem) return;
 
-    console.log("current inventory item : ", currentInventoryItem);
-    if (currentInventoryItem.sku_id != undefined || currentInventoryItem.sku_id != null) {
-      const skuItem = SKUList.filter((item) => item.id === currentInventoryItem.sku_id);
+    console.log('current inventory item : ', currentInventoryItem);
+    if (
+      currentInventoryItem.sku_id != undefined ||
+      currentInventoryItem.sku_id != null
+    ) {
+      const skuItem = SKUList.filter(
+        item => item.id === currentInventoryItem.sku_id,
+      );
       setFieldValue('itemSku', skuItem[0].name);
     }
 
-    if (currentInventoryItem.top_handling_unit_id != undefined || currentInventoryItem.top_handling_unit_id != null)
-      setFieldValue('topHandlingUnit', currentInventoryItem.top_handling_unit_id);
+    if (
+      currentInventoryItem.top_handling_unit_id != undefined ||
+      currentInventoryItem.top_handling_unit_id != null
+    )
+      setFieldValue(
+        'topHandlingUnit',
+        currentInventoryItem.top_handling_unit_id,
+      );
 
-    if (currentInventoryItem.bottom_handling_unit_id != undefined || currentInventoryItem.bottom_handling_unit_id != null)
-      setFieldValue('bottomHandlingUnit', currentInventoryItem.bottom_handling_unit_id);
+    if (
+      currentInventoryItem.bottom_handling_unit_id != undefined ||
+      currentInventoryItem.bottom_handling_unit_id != null
+    )
+      setFieldValue(
+        'bottomHandlingUnit',
+        currentInventoryItem.bottom_handling_unit_id,
+      );
 
-    if (currentInventoryItem.type_id != undefined || currentInventoryItem.type_id != null) {
-      const typeItem = typeList.find(item => item.id === currentInventoryItem.type_id);
+    if (
+      currentInventoryItem.type_id != undefined ||
+      currentInventoryItem.type_id != null
+    ) {
+      const typeItem = typeList.find(
+        item => item.id === currentInventoryItem.type_id,
+      );
       setFieldValue('itemType', typeItem?.name);
     }
 
-    if (currentInventoryItem.subtype_id != undefined || currentInventoryItem.subtype_id != null) {
-      const subTypeItem = subTypeList.find(item => item.id === currentInventoryItem.subtype_id);
+    if (
+      currentInventoryItem.subtype_id != undefined ||
+      currentInventoryItem.subtype_id != null
+    ) {
+      const subTypeItem = subTypeList.find(
+        item => item.id === currentInventoryItem.subtype_id,
+      );
       setFieldValue('itemSubType', subTypeItem?.name);
     }
 
-    if (currentInventoryItem.category_id != undefined || currentInventoryItem.category_id != null) {
-      const categoryItem = categoryList.find(item => item.id === currentInventoryItem.category_id);
+    if (
+      currentInventoryItem.category_id != undefined ||
+      currentInventoryItem.category_id != null
+    ) {
+      const categoryItem = categoryList.find(
+        item => item.id === currentInventoryItem.category_id,
+      );
       setFieldValue('itemCategory', categoryItem?.name);
     }
 
-    if (currentInventoryItem.subcategory_id != undefined || currentInventoryItem.subcategory_id != null) {
-      const subCategoryItem = subCategoryList.find(item => item.id === currentInventoryItem.subcategory_id);
+    if (
+      currentInventoryItem.subcategory_id != undefined ||
+      currentInventoryItem.subcategory_id != null
+    ) {
+      const subCategoryItem = subCategoryList.find(
+        item => item.id === currentInventoryItem.subcategory_id,
+      );
       setFieldValue('itemSubCategory', subCategoryItem?.name);
     }
 
-    if (currentInventoryItem.regular_uom_id != undefined || currentInventoryItem.regular_uom_id != null) {
-      const uomItem = UOMList.filter(item => item.id === currentInventoryItem.regular_uom_id);
+    if (
+      currentInventoryItem.regular_uom_id != undefined ||
+      currentInventoryItem.regular_uom_id != null
+    ) {
+      const uomItem = UOMList.filter(
+        item => item.id === currentInventoryItem.regular_uom_id,
+      );
       setFieldValue('uomIn', uomItem[0].name);
     }
-    if (currentInventoryItem.regular_uom_id != undefined || currentInventoryItem.regular_uom_id != null) {
-      const uomItem = UOMList.filter(item => item.id === currentInventoryItem.regular_uom_id);
+    if (
+      currentInventoryItem.regular_uom_id != undefined ||
+      currentInventoryItem.regular_uom_id != null
+    ) {
+      const uomItem = UOMList.filter(
+        item => item.id === currentInventoryItem.regular_uom_id,
+      );
       setFieldValue('uomOut', uomItem[0].name);
     }
 
-    if (currentInventoryItem.position_id != undefined || currentInventoryItem.position_id != null) {
-      setFieldValue('destination', locationInformationList[0].find(item => item.id === currentInventoryItem.position_id)?.code);
+    if (
+      currentInventoryItem.position_id != undefined ||
+      currentInventoryItem.position_id != null
+    ) {
+      setFieldValue(
+        'destination',
+        locationInformationList[0].find(
+          item => item.id === currentInventoryItem.position_id,
+        )?.code,
+      );
     }
-  }, [values.productCode])
+  }, [values.productCode]);
 
   return (
     <Layout>
@@ -538,7 +591,7 @@ function InternalTransferScreen({
               onBlur={handleBlur('productCode')}
               value={values.productCode}
               data={itemInventoryList}
-              style={{ zIndex: 10 }}
+              style={{zIndex: 10}}
               displayName={'code'}
               error={
                 errors.productCode && touched.productCode
@@ -561,7 +614,7 @@ function InternalTransferScreen({
                   onBlur={handleBlur('newProductCode')}
                   value={values.newProductCode}
                   data={[]}
-                  style={{ zIndex: 9 }}
+                  style={{zIndex: 9}}
                   displayName={'code'}
                   error={
                     errors.newProductCode && touched.newProductCode
@@ -580,8 +633,10 @@ function InternalTransferScreen({
                   onBlur={handleBlur('itemSku')}
                   value={values.itemSku}
                   data={SKUList}
-                  style={{ zIndex: 7 }}
-                  error={errors.itemSku && touched.itemSku ? errors.itemSku : ''}
+                  style={{zIndex: 7}}
+                  error={
+                    errors.itemSku && touched.itemSku ? errors.itemSku : ''
+                  }
                 />
               </View>
             ) : null}
@@ -599,11 +654,12 @@ function InternalTransferScreen({
                 fieldName="topHandlingUnit"
                 navigation={navigation}
                 placeholder="Top Handling Unit"
+                screenName="Internal Transfer"
                 onChange={handleChange('topHandlingUnit')}
                 onBlur={handleBlur('topHandlingUnit')}
                 value={values.topHandlingUnit}
                 data={handlingUnitList}
-                style={{ zIndex: 6, flex: 3.5, }}
+                style={{zIndex: 6, flex: 3.5}}
                 error={
                   errors.topHandlingUnit && touched.topHandlingUnit
                     ? errors.topHandlingUnit
@@ -620,7 +676,7 @@ function InternalTransferScreen({
                 value={values.topQuantity}
                 data={[]}
                 style={{
-                  zIndex: 6
+                  zIndex: 6,
                 }}
                 displayName={'topQuantity'}
                 error={
@@ -639,17 +695,17 @@ function InternalTransferScreen({
                 flexDirection: 'row',
                 backgroundColor: 'transparent',
               }}>
-
               <AutoCompleteNScanInput
                 handleId={setBottomHandlingUnit}
                 fieldName="bottomHandlingUnit"
                 navigation={navigation}
                 placeholder="Bottom Handling Unit"
+                screenName="Internal Transfer"
                 onChange={handleChange('bottomHandlingUnit')}
                 onBlur={handleBlur('bottomHandlingUnit')}
                 value={values.bottomHandlingUnit}
                 data={handlingUnitList}
-                style={{ zIndex: 5, flex: 3.5, }}
+                style={{zIndex: 5, flex: 3.5}}
                 error={
                   errors.bottomHandlingUnit && touched.bottomHandlingUnit
                     ? errors.bottomHandlingUnit
@@ -666,7 +722,7 @@ function InternalTransferScreen({
                 value={values.bottomQuantity}
                 data={[]}
                 style={{
-                  zIndex: 5
+                  zIndex: 5,
                 }}
                 displayName={'bottomQuantity'}
                 error={
@@ -678,25 +734,27 @@ function InternalTransferScreen({
             </View>
 
             {values.sourceType != 'Full Transfer' ? (
-
               <View>
-
                 <View
                   style={{
                     flex: 1,
-                    flexDirection: 'row'
-                  }}
-                >
+                    flexDirection: 'row',
+                  }}>
                   <DropDown
                     placeholder={'Select Item Type'}
-                    name='itemType'
+                    name="itemType"
                     navigation={navigation}
-                    data={{ productCode: values.productCode, returnUrl: "Internal Transfer" }}
+                    data={{
+                      productCode: values.productCode,
+                      returnUrl: 'Internal Transfer',
+                    }}
                     list={typeList}
                     value={values?.itemType}
                     onChange={e => setFieldValue('itemType', e)}
                     onBlur={handleBlur('itemType')}
-                    error={errors.itemType && touched.itemType ? errors.itemType : ''}
+                    error={
+                      errors.itemType && touched.itemType ? errors.itemType : ''
+                    }
                   />
                   <DropDown
                     placeholder={'Select Item SubType'}
@@ -705,15 +763,18 @@ function InternalTransferScreen({
                     value={values?.itemSubType}
                     onChange={e => setFieldValue('itemSubType', e)}
                     onBlur={handleBlur('itemSubType')}
-                    error={errors.itemSubType && touched.itemSubType ? errors.itemSubType : ''}
+                    error={
+                      errors.itemSubType && touched.itemSubType
+                        ? errors.itemSubType
+                        : ''
+                    }
                   />
                 </View>
                 <View
                   style={{
                     flex: 1,
-                    flexDirection: 'row'
-                  }}
-                >
+                    flexDirection: 'row',
+                  }}>
                   <DropDown
                     placeholder={'Select Item Category'}
                     name="itemCategory"
@@ -721,7 +782,11 @@ function InternalTransferScreen({
                     value={values.itemCategory}
                     onChange={handleChange('itemCategory')}
                     onBlur={handleBlur('itemCategory')}
-                    error={errors.itemCategory && touched.itemCategory ? errors.itemCategory : ''}
+                    error={
+                      errors.itemCategory && touched.itemCategory
+                        ? errors.itemCategory
+                        : ''
+                    }
                   />
                   <DropDown
                     placeholder={'Select Item SubCategory'}
@@ -730,7 +795,11 @@ function InternalTransferScreen({
                     value={values.itemSubCategory}
                     onChange={handleChange('itemSubCategory')}
                     onBlur={handleBlur('itemSubCategory')}
-                    error={errors.itemSubCategory && touched.itemSubCategory ? errors.itemSubCategory : ''}
+                    error={
+                      errors.itemSubCategory && touched.itemSubCategory
+                        ? errors.itemSubCategory
+                        : ''
+                    }
                   />
                 </View>
 
@@ -748,7 +817,7 @@ function InternalTransferScreen({
                   wt_data={[]}
                   wt_onChange={handleChange('uomInWt')}
                   wt_onBlur={handleBlur('uomInWt')}
-                  style={{ zIndex: 5 }}
+                  style={{zIndex: 5}}
                   error={errors.uomIn && touched.uomIn ? errors.uomIn : ''}
                   wt_error={
                     errors.uomInWt && touched.uomInWt ? errors.uomInWt : ''
@@ -758,19 +827,20 @@ function InternalTransferScreen({
               </View>
             ) : null}
 
-
             <UOMField
               navigation={navigation}
               groupName="UOM Out"
+              fieldName="uomOut"
               data={UOMList}
               value={values.uomOut}
               onChange={handleChange('uomOut')}
               onBlur={handleBlur('uomOut')}
               wt_value={values.uomOutWt}
               wt_data={[]}
+              screenName="Internal Transfer"
               wt_onChange={handleChange('uomOutWt')}
               wt_onBlur={handleBlur('uomOutWt')}
-              style={{ zIndex: 3 }}
+              style={{zIndex: 3}}
               error={errors.uomOut && touched.uomOut ? errors.uomOut : ''}
               wt_error={
                 errors.uomOutWt && touched.uomOutWt ? errors.uomOutWt : ''
@@ -805,7 +875,7 @@ function InternalTransferScreen({
               value={values.destination}
               data={locationList}
               displayName="code"
-              style={{ zIndex: 2 }}
+              style={{zIndex: 2}}
               error={
                 errors.destination && touched.destination
                   ? errors.destination
@@ -816,13 +886,13 @@ function InternalTransferScreen({
               text="Print"
               isLoading={printLoading}
               onPress={showPrintModal}
-            // testID="Login.Button"
+              // testID="Login.Button"
             />
             <Button
               text="Save"
               isLoading={saveLoading}
               onPress={handleSubmit}
-            // testID="Login.Button"
+              // testID="Login.Button"
             />
             <Modal onDismiss={hidePrintModal} isVisible={pmVisible}>
               <View style={styles.modalContainerStyle}>
@@ -836,7 +906,7 @@ function InternalTransferScreen({
                   value={values.embeddedDevice}
                   data={embeddedDeviceList}
                   displayName="device_code"
-                  style={{ zIndex: 2 }}
+                  style={{zIndex: 2}}
                   error={
                     errors.embeddedDevice && touched.embeddedDevice
                       ? errors.embeddedDevice
@@ -844,7 +914,7 @@ function InternalTransferScreen({
                   }
                 />
                 <View
-                  style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                  style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
                   <Button
                     onPress={() => handleDirectLabelPrint(values)}
                     text="OK"

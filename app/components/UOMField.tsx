@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {View, Text} from 'react-native';
 import {UOMFieldType} from '../types/components';
 import AutoCompleteNScanInput from './ScanItem';
@@ -20,6 +20,7 @@ const UOMField = ({
   style,
   error,
   wt_error,
+  screenName,
   handleId,
 }: UOMFieldType) => {
   const {theme} = useTheme();
@@ -60,6 +61,7 @@ const UOMField = ({
           onChange={onChange}
           onBlur={onBlur}
           value={UOMValue}
+          screenName={screenName}
           style={style}
           error={error}
           handleId={handleId}
@@ -83,4 +85,4 @@ const UOMField = ({
   );
 };
 
-export default UOMField;
+export default memo(UOMField);
